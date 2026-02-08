@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "code": "WELCOME100",
+    "amount": 100,
+    "isUsed": false,
+    "createdBy": "admin",
+    "createdAt": "2024-01-01",
+    "usedBy": null,
+    "usedAt": null
+  }
+]

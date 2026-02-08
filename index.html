@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💎 جوهرة الحظ 💣</title>
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
     <style>
         * {
             margin: 0;
@@ -1259,7 +1255,7 @@
             users.push({
                 username: 'abd',
                 password: 'oioioioi000',
-                balance: 0, // الأدمن يبدأ من الصفر أيضاً
+                balance: 0,
                 isAdmin: true,
                 isBanned: false
             });
@@ -1389,7 +1385,7 @@
             const newUser = {
                 username: username,
                 password: password,
-                balance: 0, // يبدأ من الصفر
+                balance: 0,
                 isAdmin: false,
                 isBanned: false
             };
@@ -1417,7 +1413,6 @@
             
             // تحديث عناصر التحكم بناءً على الرصيد
             if (currentUser.balance === 0) {
-                // إذا الرصيد صفر
                 betSlider.min = 0;
                 betSlider.max = 0;
                 betSlider.value = 0;
@@ -1435,7 +1430,6 @@
                 startBtn.disabled = true;
                 startBtn.style.background = 'linear-gradient(45deg, #666, #999)';
                 
-                // تعطيل أزرار الرهان السريع
                 quickBetButtons.forEach(btn => {
                     btn.style.opacity = '0.5';
                     btn.style.cursor = 'not-allowed';
@@ -1445,7 +1439,6 @@
                 multiplierInfo.textContent = '⚡ الشحن أولاً للبدء!';
                 
             } else {
-                // إذا يوجد رصيد
                 betSlider.min = 1;
                 betSlider.max = Math.min(currentUser.balance, 100);
                 betSlider.value = Math.min(1, currentUser.balance);
@@ -1463,7 +1456,6 @@
                 startBtn.disabled = false;
                 startBtn.style.background = 'linear-gradient(45deg, #00ff88, #00ccff)';
                 
-                // تفعيل أزرار الرهان السريع
                 quickBetButtons.forEach(btn => {
                     btn.style.opacity = '1';
                     btn.style.cursor = 'pointer';
@@ -1479,7 +1471,6 @@
                 
                 multiplierInfo.textContent = 'ابدأ من الصفر واربح!';
                 
-                // تعيين رهان افتراضي
                 setBetAmount(Math.min(1, currentUser.balance));
             }
         }
@@ -1680,11 +1671,9 @@
                 return;
             }
             
-            // شحن الرصيد
             currentUser.balance += chargeCode.amount;
             chargeCode.isUsed = true;
             
-            // تحديث البيانات
             const userIndex = users.findIndex(u => u.username === currentUser.username);
             if (userIndex !== -1) {
                 users[userIndex].balance = currentUser.balance;
@@ -1708,18 +1697,15 @@
             gameGrid.innerHTML = '';
             boxes = [];
             
-            // إنشاء المربعات
             for(let i = 0; i < totalBoxes; i++) {
                 boxes.push(i < bombCount ? 'bomb' : 'gem');
             }
             
-            // خلط المربعات
             for(let i = boxes.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [boxes[i], boxes[j]] = [boxes[j], boxes[i]];
             }
             
-            // إنشاء العناصر
             for(let i = 0; i < totalBoxes; i++) {
                 const box = document.createElement('div');
                 box.className = 'box';
@@ -1745,7 +1731,6 @@
             customBetAmount.value = betAmount;
             amountDisplay.textContent = formatAmount(betAmount);
             
-            // تحديث الزر النشط
             quickBetButtons.forEach(btn => {
                 btn.classList.remove('active');
                 const btnAmount = parseInt(btn.textContent.replace(/[^\d]/g, ''));
@@ -1760,7 +1745,6 @@
         function startGame() {
             if(gameActive || !currentUser || currentUser.balance === 0) return;
             
-            // استخدام المبلغ المخصص إذا كان مدخلاً
             const customAmount = parseInt(customBetAmount.value);
             if (customAmount && customAmount >= 1 && customAmount <= currentUser.balance) {
                 betAmount = Math.min(customAmount, currentUser.balance);
@@ -1833,27 +1817,22 @@
             
             gemsFound++;
             
-            // زيادة المضاعف بشكل تدريجي
-            const increment = 1 + (Math.random() * 0.1 + 0.05); // 5% - 15%
+            const increment = 1 + (Math.random() * 0.1 + 0.05);
             multiplier = parseFloat((multiplier * increment).toFixed(2));
             
-            // الحد الأقصى للمضاعف 3.00x
             if(multiplier > 3.0) multiplier = 3.0;
             
-            // حساب الربح الواقعي
             profit = Math.round(originalBet * multiplier - originalBet);
             
             playSound('gem');
             updateDisplay();
             updateMultiplierTrack();
             
-            // تحديث معلومات المضاعف
             multiplierInfo.innerHTML = `
                 المضاعف الحالي: <span style="color:#00ff88">${multiplier.toFixed(2)}x</span> | 
                 الجواهر: <span style="color:#00ccff">${gemsFound}</span> / ${gemCount}
             `;
             
-            // إذا وجدت كل الجواهر
             if(gemsFound === gemCount) {
                 setTimeout(() => {
                     winGame();
@@ -1886,18 +1865,15 @@
         function winGame() {
             gameActive = false;
             
-            // فوز اللاعب
             const totalWin = originalBet + profit;
             currentUser.balance += profit;
             
-            // تحديث بيانات المستخدم
             const userIndex = users.findIndex(u => u.username === currentUser.username);
             if (userIndex !== -1) {
                 users[userIndex].balance = currentUser.balance;
             }
             localStorage.setItem('users', JSON.stringify(users));
             
-            // تحديث العرض
             updateUserDisplay();
             if (currentUser.isAdmin) {
                 updateUsersTable();
@@ -1923,17 +1899,14 @@
             gameActive = false;
             profit = -originalBet;
             
-            // خسارة اللاعب
             currentUser.balance -= originalBet;
             
-            // تحديث بيانات المستخدم
             const userIndex = users.findIndex(u => u.username === currentUser.username);
             if (userIndex !== -1) {
                 users[userIndex].balance = currentUser.balance;
             }
             localStorage.setItem('users', JSON.stringify(users));
             
-            // تحديث العرض
             updateUserDisplay();
             if (currentUser.isAdmin) {
                 updateUsersTable();
@@ -1959,18 +1932,15 @@
             
             gameActive = false;
             
-            // سحب الأرباح
             const totalWin = originalBet + profit;
             currentUser.balance += profit;
             
-            // تحديث بيانات المستخدم
             const userIndex = users.findIndex(u => u.username === currentUser.username);
             if (userIndex !== -1) {
                 users[userIndex].balance = currentUser.balance;
             }
             localStorage.setItem('users', JSON.stringify(users));
             
-            // تحديث العرض
             updateUserDisplay();
             if (currentUser.isAdmin) {
                 updateUsersTable();
@@ -2001,7 +1971,6 @@
             totalAmount.textContent = formatAmount(originalBet + profit);
             currentMultiplier.textContent = `${multiplier.toFixed(2)}x`;
             
-            // تحديث ألوان الربح
             const profitElement = document.getElementById('currentProfit');
             profitElement.className = 'stat-value';
             if(profit > 0) {
@@ -2075,7 +2044,6 @@
             customBetAmount.value = betAmount;
             amountDisplay.textContent = formatAmount(betAmount);
             
-            // تحديث الزر النشط
             quickBetButtons.forEach(btn => {
                 btn.classList.remove('active');
                 const btnAmount = parseInt(btn.textContent.replace(/[^\d]/g, ''));
@@ -2098,7 +2066,6 @@
             betSlider.value = Math.min(amount, 100);
             amountDisplay.textContent = formatAmount(amount);
             
-            // تحديث الزر النشط
             quickBetButtons.forEach(btn => {
                 btn.classList.remove('active');
                 const btnAmount = parseInt(btn.textContent.replace(/[^\d]/g, ''));
@@ -2124,7 +2091,6 @@
             betSlider.value = Math.min(amount, 100);
             amountDisplay.textContent = formatAmount(amount);
             
-            // تحديث الزر النشط
             quickBetButtons.forEach(btn => {
                 btn.classList.remove('active');
                 const btnAmount = parseInt(btn.textContent.replace(/[^\d]/g, ''));
@@ -2134,20 +2100,17 @@
             });
         });
 
-        // إغلاق الرسالة بالنقر خارجها
         messageOverlay.addEventListener('click', (e) => {
             if(e.target === messageOverlay) {
                 closeMessage();
             }
         });
 
-        // تفعيل الأصوات عند التفاعل الأول
         document.addEventListener('click', () => {
             ambientSound.play().catch(() => {});
             document.removeEventListener('click', arguments.callee);
         }, { once: true });
 
-        // عرض تسجيل الدخول عند تحميل الصفحة
         window.addEventListener('load', () => {
             document.querySelector('.container').style.animation = 'containerGlow 2s ease-out';
             showMessage(
@@ -2158,6 +2121,4 @@
         });
     </script>
 </body>
-
 </html>
-
