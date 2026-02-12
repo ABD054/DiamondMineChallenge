@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💎 جوهرة الحظ 💣 | VIP</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(22, 22, 34, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* ========== تسجيل الدخول ========== */
+        .login-container {
+            display: block;
+        }
+
+        .login-box {
+            background: rgba(26, 26, 46, 0.9);
+            padding: 50px;
+            border-radius: 25px;
+            max-width: 500px;
+            margin: 100px auto;
+            border: 2px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .login-title {
+            color: #00ff88;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: #0c0c0c;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        /* ========== شريط المستخدم ========== */
+        .user-bar {
+            background: rgba(26, 26, 46, 0.8);
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .username {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .balance {
+            color: #00ccff;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #FF7761, #ff4444);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* ========== لوحة الأدمن ========== */
+        .admin-panel {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 2px solid #ff4444;
+        }
+
+        .admin-title {
+            color: #ff4444;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .admin-section {
+            background: rgba(26, 26, 46, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .section-title {
+            color: #00ccff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .admin-action-btn {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-balance-btn {
+            background: #00ff88;
+            color: black;
+        }
+
+        .remove-balance-btn {
+            background: #FF9800;
+            color: white;
+        }
+
+        .ban-btn {
+            background: #ff4444;
+            color: white;
+        }
+
+        .generate-code-btn {
+            background: linear-gradient(45deg, #7877C6, #6a0dad);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* ========== الجداول ========== */
+        .users-table, .codes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .users-table th, .users-table td,
+        .codes-table th, .codes-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .users-table th {
+            background: rgba(120, 119, 198, 0.2);
+            color: #00ccff;
+        }
+
+        /* ========== قسم الشحن ========== */
+        .charge-section {
+            background: rgba(26, 26, 46, 0.8);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .charge-input-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .charge-input {
+            width: 250px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .charge-btn {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: black;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* ========== إحصائيات اللعبة ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.8), rgba(22, 22, 34, 0.9));
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(120, 119, 198, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #7877C6, #FF7761);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .profit-positive {
+            background: linear-gradient(45deg, #00ff88, #00ccff) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            color: transparent !important;
+        }
+
+        .profit-negative {
+            background: linear-gradient(45deg, #ff4444, #ff9966) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            color: transparent !important;
+        }
+
+        /* ========== عناصر التحكم ========== */
+        .controls-section {
+            background: rgba(26, 26, 46, 0.6);
+            border-radius: 25px;
+            padding: 35px;
+            margin: 30px 0;
+        }
+
+        .amount-display {
+            font-size: 4em;
+            color: #00ff88;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .custom-amount {
+            width: 200px;
+            padding: 15px 25px;
+            background: rgba(120, 119, 198, 0.1);
+            border: 2px solid rgba(120, 119, 198, 0.3);
+            border-radius: 15px;
+            color: #00ff88;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .quick-bet-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .quick-bet {
+            padding: 10px 20px;
+            background: rgba(120, 119, 198, 0.15);
+            border: 1px solid rgba(120, 119, 198, 0.3);
+            border-radius: 10px;
+            color: #a0a0c0;
+            cursor: pointer;
+        }
+
+        .quick-bet.active {
+            background: linear-gradient(45deg, #7877C6, #6a0dad);
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: black;
+        }
+
+        .btn-withdraw {
+            background: linear-gradient(45deg, #FF7761, #ff4444);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ========== شبكة اللعب ========== */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .box {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #1a1a2e, #2d2d44);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+        }
+
+        .box.revealed {
+            cursor: default;
+        }
+
+        .box.revealed.gem {
+            background: linear-gradient(145deg, #00ff88, #00cc88);
+        }
+
+        .box.revealed.bomb {
+            background: linear-gradient(145deg, #ff4444, #ff7761);
+        }
+
+        /* ========== مضاعف ========== */
+        .multiplier-track {
+            height: 20px;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .multiplier-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .multiplier-display {
+            font-size: 1.3em;
+            color: #00ccff;
+            margin: 15px 0;
+        }
+
+        /* ========== نافذة الرسائل ========== */
+        .message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .message-box {
+            background: linear-gradient(145deg, #1a1a2e, #2d2d44);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .message-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .message-title {
+            font-size: 2em;
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
+
+        .message-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #a0a0c0;
+            margin-bottom: 30px;
+        }
+
+        .message-btn {
+            background: linear-gradient(45deg, #7877C6, #6a0dad);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        /* ========== التواصل الاجتماعي ========== */
+        .social-footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 15px;
+            border-top: 2px solid rgba(120, 119, 198, 0.3);
+        }
+
+        .social-title {
+            color: #00ccff;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            color: white;
+        }
+
+        .telegram-btn {
+            background: linear-gradient(45deg, #0088cc, #004d73);
+            color: white;
+        }
+
+        .twitter-btn {
+            background: linear-gradient(45deg, #1DA1F2, #0d71a6);
+            color: white;
+        }
+
+        .discord-btn {
+            background: linear-gradient(45deg, #5865F2, #404eed);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- تسجيل الدخول -->
+    <div class="container login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-title">💎 تسجيل الدخول</div>
+            <div class="input-group">
+                <input type="text" class="input-field" id="loginUsername" placeholder="اسم المستخدم">
+            </div>
+            <div class="input-group">
+                <input type="password" class="input-field" id="loginPassword" placeholder="كلمة المرور">
+            </div>
+            <button class="login-btn" onclick="login()">🚀 دخول</button>
+            <div class="register-link" style="margin-top: 20px; color: #a0a0c0;">
+                ليس لديك حساب؟ <a href="#" onclick="showRegister()" style="color: #00ccff;">سجل الآن</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- التسجيل -->
+    <div class="container login-container" id="registerContainer" style="display: none;">
+        <div class="login-box">
+            <div class="login-title">📝 حساب جديد</div>
+            <div class="input-group">
+                <input type="text" class="input-field" id="registerUsername" placeholder="اسم المستخدم">
+            </div>
+            <div class="input-group">
+                <input type="password" class="input-field" id="registerPassword" placeholder="كلمة المرور">
+            </div>
+            <div class="input-group">
+                <input type="password" class="input-field" id="registerConfirmPassword" placeholder="تأكيد كلمة المرور">
+            </div>
+            <button class="login-btn" onclick="register()">📝 تسجيل</button>
+            <div class="register-link" style="margin-top: 20px;">
+                لديك حساب؟ <a href="#" onclick="showLogin()" style="color: #00ccff;">دخول</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- اللعبة -->
+    <div class="container game-container" id="gameContainer" style="display: none;">
+        <!-- شريط المستخدم -->
+        <div class="user-bar">
+            <div class="user-info">
+                <span class="username">👤 <span id="currentUsername"></span></span>
+                <span class="balance">💰 $<span id="currentBalance">0</span></span>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 خروج</button>
+        </div>
+
+        <!-- لوحة الأدمن -->
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <div class="admin-title">🔧 لوحة الأدمن</div>
+            
+            <div class="admin-section">
+                <div class="section-title">👥 المستخدمين</div>
+                <div style="overflow-x: auto;">
+                    <table class="users-table" id="usersTable">
+                        <thead><tr><th>المستخدم</th><th>الرصيد</th><th>VIP</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <div class="section-title">💰 تعديل رصيد</div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="adminUsername" class="input-field" placeholder="اسم المستخدم" style="flex: 1;">
+                    <input type="number" id="adminAmount" class="input-field" placeholder="المبلغ" style="width: 120px;">
+                    <button class="admin-action-btn add-balance-btn" onclick="adminAddBalance()">➕ إضافة</button>
+                    <button class="admin-action-btn remove-balance-btn" onclick="adminRemoveBalance()">➖ خصم</button>
+                    <button class="admin-action-btn ban-btn" onclick="adminBanUser()">🚫 حظر</button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <div class="section-title">🎫 أكواد الشحن</div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="number" id="codeAmount" class="input-field" placeholder="قيمة الكود" style="width: 150px;">
+                    <button class="generate-code-btn" onclick="generateChargeCode()">🎫 إنشاء كود</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="codes-table" id="codesTable">
+                        <thead><tr><th>الكود</th><th>القيمة</th><th>الحالة</th><th>حذف</th></tr></thead>
+                        <tbody id="codesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <div class="section-title">💸 طلبات السحب</div>
+                <div style="overflow-x: auto;">
+                    <table class="users-table" id="withdrawRequestsTable">
+                        <thead><tr><th>المستخدم</th><th>المبلغ</th><th>الطريقة</th><th>التاريخ</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                        <tbody id="withdrawRequestsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الشحن -->
+        <div class="charge-section">
+            <div class="section-title">💳 شحن الرصيد</div>
+            <div class="charge-input-group">
+                <input type="text" id="chargeCode" class="charge-input" placeholder="أدخل كود الشحن">
+                <button class="charge-btn" onclick="useChargeCode()">⚡ شحن</button>
+            </div>
+        </div>
+
+        <!-- نظام VIP -->
+        <div style="background: linear-gradient(145deg, #1a1a2e, #2d1f3a); border-radius: 20px; padding: 25px; margin: 30px 0; border: 2px solid gold;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 2em; color: gold;">👑 VIP</span>
+                <div id="vipBadge" style="display: none;">
+                    <span style="background: gold; color: black; padding: 8px 20px; border-radius: 20px;">✨ VIP نشط</span>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 2em;">📅</span>
+                    <h3 style="color: #00ff88;">VIP يومي</h3>
+                    <div style="font-size: 1.8em; color: gold;">$1.99</div>
+                    <button onclick="purchaseVIP('daily')" style="background: #00ff88; color: black; border: none; padding: 10px 25px; border-radius: 10px; margin-top: 15px; cursor: pointer;">اشتراك</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; text-align: center; border: 2px solid gold;">
+                    <span style="font-size: 2em;">📆</span>
+                    <h3 style="color: gold;">VIP أسبوعي</h3>
+                    <div style="font-size: 1.8em; color: gold;">$4.89</div>
+                    <button onclick="purchaseVIP('weekly')" style="background: gold; color: black; border: none; padding: 10px 25px; border-radius: 10px; margin-top: 15px; cursor: pointer;">اشتراك</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 2em;">🗓️</span>
+                    <h3 style="color: #7877C6;">VIP شهري</h3>
+                    <div style="font-size: 1.8em; color: #7877C6;">$5.80</div>
+                    <button onclick="purchaseVIP('monthly')" style="background: #7877C6; color: white; border: none; padding: 10px 25px; border-radius: 10px; margin-top: 15px; cursor: pointer;">اشتراك</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- اللعبة -->
+        <h1>💎 جوهرة الحظ 💣</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div>الرهان</div>
+                <div class="stat-value" id="originalAmount">$0</div>
+            </div>
+            <div class="stat-card">
+                <div>الربح</div>
+                <div class="stat-value" id="currentProfit">$0</div>
+            </div>
+            <div class="stat-card">
+                <div>الإجمالي</div>
+                <div class="stat-value" id="totalAmount">$0</div>
+            </div>
+            <div class="stat-card">
+                <div>المضاعف</div>
+                <div class="stat-value" id="currentMultiplier">1.00x</div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div style="font-size: 1.5em; margin-bottom: 20px;">🎯 اختر مبلغ الرهان</div>
+            <div class="amount-display" id="amountDisplay">$1</div>
+            
+            <input type="range" id="betSlider" min="1" max="100" value="1" style="width: 100%; margin: 20px 0;">
+            
+            <input type="number" id="customBetAmount" class="custom-amount" min="1" value="1" style="margin: 10px;">
+            
+            <div class="quick-bet-buttons">
+                <div class="quick-bet" onclick="setBetAmount(1)">$1</div>
+                <div class="quick-bet" onclick="setBetAmount(5)">$5</div>
+                <div class="quick-bet" onclick="setBetAmount(10)">$10</div>
+                <div class="quick-bet" onclick="setBetAmount(25)">$25</div>
+                <div class="quick-bet" onclick="setBetAmount(50)">$50</div>
+                <div class="quick-bet" onclick="setBetAmount(100)">$100</div>
+            </div>
+
+            <div style="margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                <span style="color: #ff4444;">💣 عدد القنابل:</span>
+                <input type="range" id="bombCountSlider" min="2" max="10" value="3" step="1" style="width: 200px; margin: 0 15px;">
+                <span id="bombCountDisplay" style="color: #00ff88;">3</span>
+                <span style="color: #a0a0c0; margin-right: 15px;">(أقصى مضاعف: <span id="maxMultiplierDisplay">3.00x</span>)</span>
+            </div>
+            
+            <div class="multiplier-track">
+                <div class="multiplier-fill" id="multiplierFill"></div>
+            </div>
+            
+            <div class="multiplier-display" id="multiplierInfo">⚡ جاهز للعب</div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-start" onclick="startGame()" id="startBtn">🚀 ابدأ</button>
+                <button class="btn btn-withdraw" onclick="withdraw()" id="withdrawBtn" disabled>💰 انسحاب</button>
+            </div>
+        </div>
+
+        <!-- شبكة اللعب -->
+        <div class="game-grid" id="gameGrid"></div>
+
+        <!-- صناديق الحظ -->
+        <div style="background: linear-gradient(145deg, #1a1a2e, #2d1f2d); border-radius: 20px; padding: 25px; margin: 30px 0; border: 2px solid #FF7761;">
+            <h2 style="color: #FF7761; margin-bottom: 20px;">🎁 صناديق الحظ</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; text-align: center;">
+                    <div style="font-size: 3em;">⛑️</div>
+                    <h3 style="color: #00ccff;">خوذة الرأس</h3>
+                    <div style="margin: 10px 0;"><span style="color: #00ff88;">$2.00</span></div>
+                    <button onclick="openLuckyBox(2)" style="background: #00ccff; color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer;">🎲 افتح</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; text-align: center;">
+                    <div style="font-size: 3em;">⚔️</div>
+                    <h3 style="color: gold;">السيف الذهبي</h3>
+                    <div style="margin: 10px 0;"><span style="color: #00ff88;">$5.00</span></div>
+                    <button onclick="openLuckyBox(5)" style="background: gold; color: black; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer;">🎲 افتح</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; text-align: center;">
+                    <div style="font-size: 3em;">🎫</div>
+                    <h3 style="color: #00ff88;">قسيمة VIP</h3>
+                    <div style="margin: 10px 0;"><span style="color: #00ff88;">$20.00</span></div>
+                    <button onclick="openLuckyBox(20)" style="background: #00ff88; color: black; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer;">🎲 افتح</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- قائمة المتصدرين -->
+        <div style="background: rgba(26, 26, 46, 0.8); border-radius: 20px; padding: 25px; margin: 30px 0;">
+            <h2 style="color: #00ccff;">🏆 المتصدرين</h2>
+            <div style="overflow-x: auto; margin-top: 20px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: rgba(120, 119, 198, 0.2);">
+                            <th style="padding: 12px; color: #00ccff;">#</th>
+                            <th style="padding: 12px; color: #00ccff;">اللاعب</th>
+                            <th style="padding: 12px; color: #00ccff;">الرصيد</th>
+                            <th style="padding: 12px; color: #00ccff;">إجمالي الشحن</th>
+                            <th style="padding: 12px; color: #00ccff;">VIP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- سحب الأرباح -->
+        <div style="background: rgba(26, 26, 46, 0.8); border-radius: 20px; padding: 25px; margin: 30px 0;">
+            <h2 style="color: #00ff88;">💸 سحب الأرباح</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+                <input type="number" id="withdrawAmount" class="input-field" placeholder="المبلغ (أقل $10)" min="10">
+                <select id="withdrawMethod" class="input-field">
+                    <option value="paypal">PayPal</option>
+                    <option value="bank">تحويل بنكي</option>
+                    <option value="stc">STC Pay</option>
+                </select>
+                <input type="text" id="withdrawDetails" class="input-field" placeholder="معلومات السحب">
+            </div>
+            <button onclick="requestWithdraw()" style="background: #00ff88; color: black; border: none; padding: 15px 40px; border-radius: 10px; font-weight: bold; cursor: pointer;">💸 طلب سحب</button>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="color: #00ccff;">📋 سجل معاملاتي</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(120, 119, 198, 0.2);">
+                                <th style="padding: 12px;">النوع</th>
+                                <th style="padding: 12px;">المبلغ</th>
+                                <th style="padding: 12px;">التفاصيل</th>
+                                <th style="padding: 12px;">التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTransactionsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة الرسائل -->
+        <div class="message-overlay" id="messageOverlay">
+            <div class="message-box">
+                <div class="message-icon" id="messageIcon">💎</div>
+                <div class="message-title" id="messageTitle"></div>
+                <div class="message-text" id="messageText"></div>
+                <button class="message-btn" onclick="closeMessage()">متابعة</button>
+            </div>
+        </div>
+
+        <!-- التواصل الاجتماعي -->
+        <div class="social-footer">
+            <div class="social-title">📱 تواصل معنا</div>
+            <div class="social-links">
+                <a href="#" class="social-btn whatsapp-btn" onclick="openSocial('whatsapp')">📱 واتساب</a>
+                <a href="#" class="social-btn telegram-btn" onclick="openSocial('telegram')">📨 تليجرام</a>
+                <a href="#" class="social-btn twitter-btn" onclick="openSocial('twitter')">🐦 تويتر</a>
+                <a href="#" class="social-btn discord-btn" onclick="openSocial('discord')">💬 دسكورد</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- الأصوات -->
+    <audio id="clickSound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+    <audio id="gemSound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+    <audio id="bombSound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-bomb-explosion-2800.mp3"></audio>
+    <audio id="winSound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+    <audio id="cashSound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-cash-flow-coin-1996.mp3"></audio>
+
+    <script>
+        // ========== Firebase ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzQJ1J1J1J1J1J1J1J1J1J1",
+            authDomain: "gamerluck-12345.firebaseapp.com",
+            databaseURL: "https://gamerluck-12345-default-rtdb.firebaseio.com",
+            projectId: "gamerluck-12345",
+            storageBucket: "gamerluck-12345.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ========== متغيرات عامة ==========
+        let currentUser = null;
+        let gameActive = false;
+        let betAmount = 1;
+        let originalBet = 0;
+        let profit = 0;
+        let multiplier = 1.0;
+        let boxes = [];
+        let gemsFound = 0;
+        let bombCount = 3;
+        const totalBoxes = 20;
+
+        // ========== DOM ==========
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const gameContainer = document.getElementById('gameContainer');
+        const adminPanel = document.getElementById('adminPanel');
+        const currentUsername = document.getElementById('currentUsername');
+        const currentBalance = document.getElementById('currentBalance');
+        const gameGrid = document.getElementById('gameGrid');
+        const startBtn = document.getElementById('startBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const messageOverlay = document.getElementById('messageOverlay');
+
+        // ========== تهيئة Firebase ==========
+        function initDB() {
+            db.ref('users/abd').once('value', snap => {
+                if (!snap.exists()) {
+                    db.ref('users/abd').set({
+                        username: 'abd',
+                        password: 'oioioioi000',
+                        balance: 10000,
+                        isAdmin: true,
+                        isBanned: false,
+                        vip: null,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            });
+
+            db.ref('chargeCodes').once('value', snap => {
+                if (!snap.exists()) {
+                    const codes = {
+                        'START100': { code: 'START100', amount: 100, isUsed: false },
+                        'FIRST50': { code: 'FIRST50', amount: 50, isUsed: false },
+                        'BONUS200': { code: 'BONUS200', amount: 200, isUsed: false }
+                    };
+                    db.ref('chargeCodes').set(codes);
+                }
+            });
+        }
+        initDB();
+
+        // ========== المستخدمين ==========
+        window.showLogin = function() {
+            loginContainer.style.display = 'block';
+            registerContainer.style.display = 'none';
+        }
+
+        window.showRegister = function() {
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+        }
+
+        window.login = function() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            db.ref('users/' + username).once('value', snap => {
+                const user = snap.val();
+                if (!user || user.password !== password) {
+                    return showMessage('❌ خطأ', 'اسم المستخدم أو كلمة المرور خطأ');
+                }
+                if (user.isBanned) {
+                    return showMessage('🚫 محظور', 'حسابك محظور');
+                }
+
+                currentUser = { ...user, username };
+                loginContainer.style.display = 'none';
+                gameContainer.style.display = 'block';
+                
+                document.getElementById('currentUsername').textContent = username;
+                document.getElementById('currentBalance').textContent = user.balance || 0;
+                
+                if (user.isAdmin) {
+                    adminPanel.style.display = 'block';
+                    loadUsers();
+                    loadCodes();
+                    loadWithdrawRequests();
+                }
+                
+                loadLeaderboard();
+                showMessage('🎉 مرحباً', 'تم تسجيل الدخول بنجاح');
+            });
+        }
+
+        window.register = function() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerConfirmPassword').value;
+
+            if (!username || !password) return showMessage('⚠️ خطأ', 'املأ جميع الحقول');
+            if (password !== confirm) return showMessage('⚠️ خطأ', 'كلمات المرور غير متطابقة');
+            if (username.length < 3) return showMessage('⚠️ خطأ', 'اسم المستخدم 3 أحرف على الأقل');
+            if (password.length < 6) return showMessage('⚠️ خطأ', 'كلمة المرور 6 أحرف على الأقل');
+
+            db.ref('users/' + username).once('value', snap => {
+                if (snap.exists()) {
+                    return showMessage('⚠️ خطأ', 'المستخدم موجود');
+                }
+
+                const newUser = {
+                    username, password,
+                    balance: 0,
+                    totalCharged: 0,
+                    isAdmin: false,
+                    isBanned: false,
+                    vip: null,
+                    createdAt: new Date().toISOString()
+                };
+
+                db.ref('users/' + username).set(newUser);
+                showMessage('✅ تم', 'تم إنشاء الحساب');
+                showLogin();
+            });
+        }
+
+        window.logout = function() {
+            currentUser = null;
+            gameContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+        }
+
+        // ========== أكواد الشحن ==========
+        window.generateChargeCode = function() {
+            if (!currentUser?.isAdmin) return;
+            
+            const amount = parseInt(document.getElementById('codeAmount').value);
+            if (!amount || amount <= 0) return showMessage('⚠️ خطأ', 'أدخل قيمة صحيحة');
+
+            const code = 'GEM' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            db.ref('chargeCodes/' + code).set({
+                code, amount,
+                isUsed: false,
+                createdBy: currentUser.username,
+                createdAt: new Date().toISOString()
+            });
+
+            showMessage('✅ تم', `الكود: ${code}\nالقيمة: $${amount}`);
+            document.getElementById('codeAmount').value = '';
+            loadCodes();
+        }
+
+        window.useChargeCode = function() {
+            if (!currentUser) return showMessage('⚠️', 'سجل دخول أولاً');
+            
+            const code = document.getElementById('chargeCode').value.trim().toUpperCase();
+            if (!code) return showMessage('⚠️', 'أدخل الكود');
+
+            db.ref('chargeCodes/' + code).once('value', snap => {
+                const data = snap.val();
+                if (!data) return showMessage('❌', 'كود غير صحيح');
+                if (data.isUsed) return showMessage('❌', 'الكود مستخدم');
+
+                data.isUsed = true;
+                data.usedBy = currentUser.username;
+                data.usedAt = new Date().toISOString();
+                db.ref('chargeCodes/' + code).set(data);
+
+                const newBalance = (currentUser.balance || 0) + data.amount;
+                db.ref('users/' + currentUser.username + '/balance').set(newBalance);
+                db.ref('users/' + currentUser.username + '/totalCharged').set((currentUser.totalCharged || 0) + data.amount);
+                
+                currentUser.balance = newBalance;
+                currentUser.totalCharged = (currentUser.totalCharged || 0) + data.amount;
+                document.getElementById('currentBalance').textContent = newBalance;
+                
+                showMessage('✅ تم الشحن', `+$${data.amount}`);
+                document.getElementById('chargeCode').value = '';
+                loadLeaderboard();
+            });
+        }
+
+        function loadCodes() {
+            if (!currentUser?.isAdmin) return;
+            db.ref('chargeCodes').once('value', snap => {
+                let html = '';
+                const codes = [];
+                snap.forEach(child => codes.push(child.val()));
+                codes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                codes.forEach(c => {
+                    html += `<tr>
+                        <td style="padding: 12px;">${c.code}</td>
+                        <td style="padding: 12px; color: #00ff88;">$${c.amount}</td>
+                        <td style="padding: 12px;">${c.isUsed ? '✅ مستخدم' : '🟢 جديد'}</td>
+                        <td style="padding: 12px;"><button onclick="deleteCode('${c.code}')" style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 5px;">🗑️</button></td>
+                    </tr>`;
+                });
+                document.getElementById('codesTableBody').innerHTML = html || '<tr><td colspan="4" style="padding: 30px;">لا توجد أكواد</td></tr>';
+            });
+        }
+
+        window.deleteCode = function(code) {
+            if (!currentUser?.isAdmin) return;
+            if (confirm('حذف الكود؟')) {
+                db.ref('chargeCodes/' + code).remove();
+                loadCodes();
+                showMessage('✅', 'تم الحذف');
+            }
+        }
+
+        // ========== المستخدمين للأدمن ==========
+        function loadUsers() {
+            if (!currentUser?.isAdmin) return;
+            db.ref('users').once('value', snap => {
+                let html = '';
+                const users = [];
+                snap.forEach(child => users.push(child.val()));
+                
+                users.forEach(u => {
+                    html += `<tr>
+                        <td>${u.username} ${u.isAdmin ? '👑' : ''}</td>
+                        <td style="color: #00ff88;">$${u.balance || 0}</td>
+                        <td>${u.vip ? '✅' : '❌'}</td>
+                        <td>${u.isBanned ? '🚫' : '✅'}</td>
+                        <td>
+                            <button onclick="adminAddBalanceTo('${u.username}')" style="background: #00ff88; color: black; padding: 5px 10px; border: none; border-radius: 5px;">➕</button>
+                            <button onclick="adminRemoveBalanceFrom('${u.username}')" style="background: #FF9800; color: white; padding: 5px 10px; border: none; border-radius: 5px;">➖</button>
+                            <button onclick="toggleBan('${u.username}')" style="background: #ff4444; color: white; padding: 5px 10px; border: none; border-radius: 5px;">${u.isBanned ? '🔓' : '🚫'}</button>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('usersTableBody').innerHTML = html;
+            });
+        }
+
+        window.adminAddBalance = function() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const amount = parseInt(document.getElementById('adminAmount').value);
+            if (username && amount > 0) adminAddBalanceTo(username, amount);
+        }
+
+        window.adminAddBalanceTo = function(username, amount) {
+            if (!amount) amount = parseInt(prompt('المبلغ:'));
+            if (!amount || amount <= 0) return;
+
+            db.ref('users/' + username).once('value', snap => {
+                const user = snap.val();
+                if (!user) return showMessage('❌', 'المستخدم غير موجود');
+                
+                const newBalance = (user.balance || 0) + amount;
+                db.ref('users/' + username + '/balance').set(newBalance);
+                
+                if (currentUser.username === username) {
+                    currentUser.balance = newBalance;
+                    document.getElementById('currentBalance').textContent = newBalance;
+                }
+                
+                showMessage('✅', `تم إضافة $${amount} إلى ${username}`);
+                loadUsers();
+            });
+        }
+
+        window.adminRemoveBalance = function() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const amount = parseInt(document.getElementById('adminAmount').value);
+            if (username && amount > 0) adminRemoveBalanceFrom(username, amount);
+        }
+
+        window.adminRemoveBalanceFrom = function(username, amount) {
+            if (!amount) amount = parseInt(prompt('المبلغ:'));
+            if (!amount || amount <= 0) return;
+
+            db.ref('users/' + username).once('value', snap => {
+                const user = snap.val();
+                if (!user) return showMessage('❌', 'المستخدم غير موجود');
+                if ((user.balance || 0) < amount) return showMessage('❌', 'الرصيد غير كافي');
+                
+                const newBalance = (user.balance || 0) - amount;
+                db.ref('users/' + username + '/balance').set(newBalance);
+                
+                if (currentUser.username === username) {
+                    currentUser.balance = newBalance;
+                    document.getElementById('currentBalance').textContent = newBalance;
+                }
+                
+                showMessage('✅', `تم خصم $${amount} من ${username}`);
+                loadUsers();
+            });
+        }
+
+        window.adminBanUser = function() {
+            const username = document.getElementById('adminUsername').value.trim();
+            if (username) toggleBan(username);
+        }
+
+        window.toggleBan = function(username) {
+            if (username === 'abd') return showMessage('⚠️', 'لا يمكن حظر الأدمن');
+            db.ref('users/' + username).once('value', snap => {
+                const user = snap.val();
+                if (!user) return;
+                const newStatus = !user.isBanned;
+                db.ref('users/' + username + '/isBanned').set(newStatus);
+                showMessage('✅', `تم ${newStatus ? 'حظر' : 'فك حظر'} ${username}`);
+                loadUsers();
+            });
+        }
+
+        // ========== طلبات السحب ==========
+        window.requestWithdraw = function() {
+            if (!currentUser) return showMessage('⚠️', 'سجل دخول أولاً');
+            
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const method = document.getElementById('withdrawMethod').value;
+            const details = document.getElementById('withdrawDetails').value.trim();
+
+            if (!amount || amount < 10) return showMessage('⚠️', 'أقل مبلغ $10');
+            if (!details) return showMessage('⚠️', 'أدخل معلومات السحب');
+            if (currentUser.balance < amount) return showMessage('⚠️', 'الرصيد غير كافي');
+
+            const id = Date.now().toString();
+            db.ref('withdrawals/' + id).set({
+                id, username: currentUser.username, amount, method, details,
+                status: 'pending',
+                requestedAt: new Date().toISOString()
+            });
+
+            showMessage('✅', 'تم إرسال الطلب');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawDetails').value = '';
+            if (currentUser.isAdmin) loadWithdrawRequests();
+        }
+
+        window.approveWithdrawal = function(id) {
+            if (!currentUser?.isAdmin) return;
+            db.ref('withdrawals/' + id).once('value', async snap => {
+                const req = snap.val();
+                if (!req || req.status !== 'pending') return;
+                
+                const userSnap = await db.ref('users/' + req.username).once('value');
+                const user = userSnap.val();
+                
+                if (!user || user.balance < req.amount) {
+                    return showMessage('❌', 'الرصيد غير كافي');
+                }
+
+                db.ref('users/' + req.username + '/balance').set(user.balance - req.amount);
+                db.ref('withdrawals/' + id + '/status').set('approved');
+                db.ref('withdrawals/' + id + '/processedAt').set(new Date().toISOString());
+                
+                showMessage('✅', 'تمت الموافقة');
+                loadWithdrawRequests();
+            });
+        }
+
+        window.rejectWithdrawal = function(id) {
+            if (!currentUser?.isAdmin) return;
+            db.ref('withdrawals/' + id + '/status').set('rejected');
+            db.ref('withdrawals/' + id + '/processedAt').set(new Date().toISOString());
+            showMessage('✅', 'تم الرفض');
+            loadWithdrawRequests();
+        }
+
+        function loadWithdrawRequests() {
+            if (!currentUser?.isAdmin) return;
+            db.ref('withdrawals').limitToLast(20).once('value', snap => {
+                let html = '';
+                const reqs = [];
+                snap.forEach(child => reqs.push(child.val()));
+                reqs.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+                
+                reqs.forEach(r => {
+                    let statusColor = r.status === 'pending' ? 'orange' : r.status === 'approved' ? '#00ff88' : '#ff4444';
+                    let actions = '';
+                    if (r.status === 'pending') {
+                        actions = `<button onclick="approveWithdrawal('${r.id}')" style="background: #00ff88; color: black; padding: 5px 10px; border: none; border-radius: 5px;">✅</button>
+                                  <button onclick="rejectWithdrawal('${r.id}')" style="background: #ff4444; color: white; padding: 5px 10px; border: none; border-radius: 5px;">❌</button>`;
+                    }
+                    
+                    html += `<tr>
+                        <td>${r.username}</td>
+                        <td style="color: #00ff88;">$${r.amount}</td>
+                        <td>${r.method}</td>
+                        <td>${new Date(r.requestedAt).toLocaleDateString('ar-SA')}</td>
+                        <td style="color: ${statusColor};">${r.status}</td>
+                        <td>${actions}</td>
+                    </tr>`;
+                });
+                document.getElementById('withdrawRequestsTableBody').innerHTML = html || '<tr><td colspan="6">لا توجد طلبات</td></tr>';
+            });
+        }
+
+        // ========== صناديق الحظ ==========
+        window.openLuckyBox = function(price) {
+            if (!currentUser) return showMessage('⚠️', 'سجل دخول أولاً');
+            if (currentUser.balance < price) return showMessage('⚠️', 'الرصيد غير كافي');
+
+            currentUser.balance -= price;
+            db.ref('users/' + currentUser.username + '/balance').set(currentUser.balance);
+            document.getElementById('currentBalance').textContent = currentUser.balance;
+
+            let prize = 0;
+            if (price === 2) {
+                let r = Math.random();
+                if (r < 0.7) prize = +(1.5 + Math.random()).toFixed(2);
+                else if (r < 0.95) prize = +(3 + Math.random() * 2).toFixed(2);
+                else prize = +(8 + Math.random() * 7).toFixed(2);
+            } else if (price === 5) {
+                let r = Math.random();
+                if (r < 0.6) prize = +(3 + Math.random() * 3).toFixed(2);
+                else if (r < 0.9) prize = +(7 + Math.random() * 5).toFixed(2);
+                else prize = +(15 + Math.random() * 10).toFixed(2);
+            } else if (price === 20) {
+                let r = Math.random();
+                if (r < 0.5) prize = +(15 + Math.random() * 10).toFixed(2);
+                else if (r < 0.85) prize = +(30 + Math.random() * 20).toFixed(2);
+                else prize = +(60 + Math.random() * 40).toFixed(2);
+            }
+
+            currentUser.balance += prize;
+            db.ref('users/' + currentUser.username + '/balance').set(currentUser.balance);
+            document.getElementById('currentBalance').textContent = currentUser.balance;
+
+            showMessage('🎁 صندوق الحظ', `ربحت: $${prize}`);
+        }
+
+        // ========== قائمة المتصدرين ==========
+        function loadLeaderboard() {
+            db.ref('users').orderByChild('totalCharged').limitToLast(10).once('value', snap => {
+                let html = '';
+                const users = [];
+                snap.forEach(child => users.push(child.val()));
+                users.sort((a, b) => (b.totalCharged || 0) - (a.totalCharged || 0));
+                
+                users.forEach((u, i) => {
+                    html += `<tr>
+                        <td style="padding: 12px;">${i+1}${i===0?'👑':i===1?'🥈':i===2?'🥉':''}</td>
+                        <td style="padding: 12px;">${u.username} ${u.vip ? '👑' : ''}</td>
+                        <td style="padding: 12px; color: #00ff88;">$${u.balance || 0}</td>
+                        <td style="padding: 12px; color: #00ccff;">$${u.totalCharged || 0}</td>
+                        <td style="padding: 12px;">${u.vip ? 'VIP' : '-'}</td>
+                    </tr>`;
+                });
+                document.getElementById('leaderboardBody').innerHTML = html || '<tr><td colspan="5">لا يوجد متصدرين</td></tr>';
+            });
+        }
+
+        // ========== VIP ==========
+        window.purchaseVIP = function(type) {
+            if (!currentUser) return showMessage('⚠️', 'سجل دخول أولاً');
+            
+            let price, duration, bonus;
+            if (type === 'daily') { price = 1.99; duration = 24*60*60*1000; bonus = 0.3; }
+            else if (type === 'weekly') { price = 4.89; duration = 7*24*60*60*1000; bonus = 0.5; }
+            else if (type === 'monthly') { price = 5.80; duration = 30*24*60*60*1000; bonus = 0.7; }
+            else return;
+
+            if (currentUser.balance < price) return showMessage('⚠️', 'الرصيد غير كافي');
+
+            currentUser.balance -= price;
+            db.ref('users/' + currentUser.username + '/balance').set(currentUser.balance);
+            document.getElementById('currentBalance').textContent = currentUser.balance;
+
+            const vipData = {
+                type, bonus, freeReveal: true,
+                expiresAt: Date.now() + duration,
+                purchasedAt: new Date().toISOString()
+            };
+            
+            currentUser.vip = vipData;
+            db.ref('users/' + currentUser.username + '/vip').set(vipData);
+            showMessage('👑', 'تم تفعيل VIP');
+            document.getElementById('vipBadge').style.display = 'block';
+        }
+
+        // ========== اللعبة ==========
+        window.setBetAmount = function(amount) {
+            if (!currentUser) return;
+            betAmount = Math.min(amount, currentUser.balance || 1, 1000);
+            document.getElementById('betSlider').value = betAmount;
+            document.getElementById('customBetAmount').value = betAmount;
+            document.getElementById('amountDisplay').textContent = '$' + betAmount;
+        }
+
+        window.startGame = function() {
+            if (!currentUser) return showMessage('⚠️', 'سجل دخول أولاً');
+            if (gameActive) return showMessage('⚠️', 'في جولة حالياً');
+            if (currentUser.balance < betAmount) return showMessage('⚠️', 'الرصيد غير كافي');
+
+            currentUser.balance -= betAmount;
+            db.ref('users/' + currentUser.username + '/balance').set(currentUser.balance);
+            document.getElementById('currentBalance').textContent = currentUser.balance;
+
+            gameActive = true;
+            originalBet = betAmount;
+            profit = 0;
+            multiplier = 1.0;
+            gemsFound = 0;
+
+            startBtn.disabled = true;
+            withdrawBtn.disabled = false;
+
+            bombCount = parseInt(document.getElementById('bombCountSlider').value);
+            
+            // إنشاء المربعات
+            boxes = [];
+            for (let i = 0; i < totalBoxes; i++) boxes.push(i < bombCount ? 'bomb' : 'gem');
+            for (let i = boxes.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [boxes[i], boxes[j]] = [boxes[j], boxes[i]];
+            }
+
+            gameGrid.innerHTML = '';
+            for (let i = 0; i < totalBoxes; i++) {
+                let box = document.createElement('div');
+                box.className = 'box';
+                box.dataset.index = i;
+                box.dataset.type = boxes[i];
+                box.textContent = '?';
+                box.onclick = () => revealBox(i);
+                gameGrid.appendChild(box);
+            }
+
+            updateDisplay();
+        }
+
+        function revealBox(i) {
+            if (!gameActive) return;
+            let box = document.querySelector(`.box[data-index="${i}"]`);
+            if (box.classList.contains('revealed')) return;
+
+            playSound('click');
+            box.classList.add('revealed');
+
+            if (box.dataset.type === 'gem') {
+                box.textContent = '💎';
+                box.classList.add('gem');
+                gemsFound++;
+                
+                let inc = bombCount <= 3 ? 0.12 : bombCount <= 6 ? 0.18 : 0.25;
+                multiplier = +(multiplier * (1 + inc)).toFixed(2);
+                
+                let maxMult = 2 + bombCount * 0.15;
+                if (currentUser?.vip) maxMult += currentUser.vip.bonus || 0;
+                if (multiplier > maxMult) multiplier = maxMult;
+                
+                profit = Math.round(originalBet * (multiplier - 1));
+                playSound('gem');
+                
+                if (gemsFound === totalBoxes - bombCount) setTimeout(winGame, 300);
+            } else {
+                box.textContent = '💣';
+                box.classList.add('bomb');
+                playSound('bomb');
+                setTimeout(loseGame, 500);
+            }
+
+            updateDisplay();
+            document.getElementById('multiplierFill').style.width = (gemsFound / (totalBoxes - bombCount) * 100) + '%';
+        }
+
+        function winGame() {
+            if (!gameActive) return;
+            gameActive = false;
+            currentUser.balance += profit;
+            db.ref('users/' + currentUser.username + '/balance').set(currentUser.balance);
+            document.getElementById('currentBalance').textContent = currentUser.balance;
+            playSound('win');
+            showMessage('🏆 فوز', `ربحت $${profit}`);
+            resetGame();
+        }
+
+        function loseGame() {
+            if (!gameActive) return;
+            gameActive = false;
+            profit = -originalBet;
+            updateDisplay();
+            playSound('bomb');
+            showMessage('💥 خسارة', `خسرت $${originalBet}`);
+            resetGame();
+        }
+
+        window.withdraw = function() {
+            if (!gameActive || profit <= 0) return;
+            gameActive = false;
+            currentUser.balance += profit;
+            db.ref('users/' + currentUser.username + '/balance').set(currentUser.balance);
+            document.getElementById('currentBalance').textContent = currentUser.balance;
+            playSound('cash');
+            showMessage('💰 انسحاب', `ربحت $${profit}`);
+            resetGame();
+        }
+
+        function resetGame() {
+            gameActive = false;
+            startBtn.disabled = false;
+            withdrawBtn.disabled = true;
+        }
+
+        function updateDisplay() {
+            document.getElementById('originalAmount').textContent = '$' + (originalBet || 0);
+            document.getElementById('currentProfit').textContent = '$' + (profit || 0);
+            document.getElementById('totalAmount').textContent = '$' + ((originalBet || 0) + (profit || 0));
+            document.getElementById('currentMultiplier').textContent = (multiplier || 1).toFixed(2) + 'x';
+            document.getElementById('multiplierInfo').innerHTML = `المضاعف: ${(multiplier || 1).toFixed(2)}x | الجواهر: ${gemsFound}/${totalBoxes - bombCount}`;
+        }
+
+        // ========== التواصل ==========
+        window.openSocial = function(p) {
+            let url = '#';
+            if (p === 'whatsapp') url = 'https://wa.me/966500000000?text=مرحباً';
+            else if (p === 'telegram') url = 'https://t.me/your_channel';
+            else if (p === 'twitter') url = 'https://twitter.com/your_account';
+            else if (p === 'discord') url = 'https://discord.gg/your_server';
+            window.open(url, '_blank');
+        }
+
+        // ========== الرسائل ==========
+        window.showMessage = function(title, text, icon = '💎') {
+            document.getElementById('messageIcon').textContent = icon;
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageText').innerHTML = text;
+            messageOverlay.style.display = 'flex';
+        }
+
+        window.closeMessage = function() {
+            messageOverlay.style.display = 'none';
+            playSound('click');
+        }
+
+        function playSound(type) {
+            try {
+                let sound = document.getElementById(type + 'Sound');
+                if (sound) { sound.currentTime = 0; sound.play().catch(() => {}); }
+            } catch(e) {}
+        }
+
+        // ========== الأحداث ==========
+        document.getElementById('betSlider').addEventListener('input', function() {
+            if (!currentUser) return;
+            betAmount = parseInt(this.value);
+            document.getElementById('customBetAmount').value = betAmount;
+            document.getElementById('amountDisplay').textContent = '$' + betAmount;
+        });
+
+        document.getElementById('customBetAmount').addEventListener('input', function() {
+            if (!currentUser) return;
+            let amount = parseInt(this.value) || 1;
+            amount = Math.min(Math.max(amount, 1), currentUser.balance || 1, 1000);
+            betAmount = amount;
+            document.getElementById('betSlider').value = amount;
+            document.getElementById('amountDisplay').textContent = '$' + amount;
+        });
+
+        document.getElementById('bombCountSlider').addEventListener('input', function() {
+            document.getElementById('bombCountDisplay').textContent = this.value;
+            let maxMult = 2 + parseInt(this.value) * 0.15;
+            if (currentUser?.vip) maxMult += currentUser.vip.bonus || 0;
+            document.getElementById('maxMultiplierDisplay').textContent = Math.min(maxMult, 5).toFixed(2) + 'x';
+        });
+
+        messageOverlay.addEventListener('click', function(e) {
+            if (e.target === messageOverlay) closeMessage();
+        });
+
+        window.addEventListener('load', function() {
+            showLogin();
+            showMessage('💎 جوهرة الحظ', 'مرحباً بك في لعبة جوهرة الحظ!');
+        });
+    </script>
+</body>
+</html>
